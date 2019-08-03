@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import initButton from "./initButton";
 import "./button.css";
 
-export default function Button({ onClick, children }) {
+export default function Button({ onClick, className, children }) {
   useEffect(initButton, []);
 
   return (
-    <>
+    <div className={className}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         version="1.1"
@@ -37,6 +37,6 @@ export default function Button({ onClick, children }) {
           <span className="circle bottom-right" />
         </span>
       </button>
-    </>
+    </div>
   );
 }

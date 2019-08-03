@@ -1,14 +1,16 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { colors } from "../Config";
+import { colors, MIDI_ENABLED } from "../Config";
 import Square from "./Square";
 import ColorReference from "./ColorReference";
 import Background from "./Background";
 import Bar from "./Bar";
 import LevelGenerator from "../utils/LevelGenerator";
 
+import MidiSender from '../utils/MidiSender'
+
 const Wrapper = styled.div`
-  height: 100vh;
+  height: 100%;
   width: 100vw;
   display: flex;
   align-items: center;
@@ -16,31 +18,47 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const levelGenerator = new LevelGenerator(Object.values(colors));
-
-function Game({ onEnd }) {
+function Game({ onEnd, bpm }) {
+  const levelGenerator = useRef(new LevelGenerator(Object.values(colors), bpm));
   const [currentColorsSet, setColors] = useState(Object.values(colors));
 
   const [colorIndex, setColorIndex] = useState(0);
-  const [squares, setSquares] = useState([levelGenerator.getFirstSquare()]);
+  const [squares, setSquares] = useState(() => [levelGenerator.current.getFirstSquare()]);
   const color = currentColorsSet[colorIndex];
 
+  const bgRef = useRef()
+
+
+    /* MIDI TRY HARD STUFF */
+    
+    const Midi = useRef();
+    if(!Midi.current) {
+      Midi.current = new MidiSender(bpm, MIDI_ENABLED);
+    }
+    useEffect(() => {
+      Midi.current.init()
+    }, [])
+    /* MIDI TRY HARD STUFF */
+  
   const handleCollision = useCallback(
     square => {
       if (square.color === color) {
         console.log("hit");
+        bgRef.current.triggerPulse(color)
+        Midi.current.onHit()
       } else {
+        Midi.current.onEnd()
         onEnd();
       }
       setSquares(squares => squares.filter(s => s.key !== square.key));
     },
-    [color, onEnd]
+    [color, onEnd] //onEnd]
   );
 
   const handleMount = useCallback(square => {
     if (square.timeToNext) {
       setTimeout(() => {
-        setSquares(squares => [...squares, levelGenerator.getNextSquare()]);
+        setSquares(squares => [...squares, levelGenerator.current.getNextSquare()]);
       }, square.timeToNext);
     }
   }, []);
@@ -55,6 +73,9 @@ function Game({ onEnd }) {
 
   const handleKeyDown = e => console.log(e.key);
 
+
+  
+
   return (
     <Wrapper onClick={handleTap} onKeyPress={handleKeyDown}>
       {squares.map(s => (
@@ -63,12 +84,12 @@ function Game({ onEnd }) {
           squareData={s}
           onMount={handleMount}
           onCollision={handleCollision}
-          speed={3000}
+          speed={bpm}
         />
       ))}
       <Bar color={color} />
       <ColorReference colors={currentColorsSet} />
-      <Background />
+      <Background ref={bgRef} />
     </Wrapper>
   );
 }

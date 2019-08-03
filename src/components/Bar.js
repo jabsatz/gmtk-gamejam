@@ -1,13 +1,14 @@
 import React from "react";
 import styled from "styled-components";
+import { useSpring, animated, config} from "react-spring";
 
-const BarElement = styled.div`
+const BarElement = styled(animated.div)`
   height: 5em;
   width: 100%;
   box-shadow: 0px -5px 30px #0a0a0ab5;
-  background: ${({ color }) => color};
   transition: all 0.3s ease;
   z-index: 0;
+  will-change: transform, opacity, background;
   clip-path: polygon(
     0 0,
     4% 3.5%,
@@ -28,5 +29,13 @@ const BarElement = styled.div`
 `;
 
 export default function Bar({ color }) {
-  return <BarElement color={color} />;
+
+  const props = useSpring({
+    background: color,
+    transform: 'translateY(0px)',
+    opacity: 1,
+    from: { transform: 'translateY(50px)', opacity: 0 },
+  })
+
+  return <BarElement style={props} />;
 }

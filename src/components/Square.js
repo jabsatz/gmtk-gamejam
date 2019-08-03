@@ -17,10 +17,11 @@ const Wrapper = styled.div`
   background: ${({ color }) => color};
   height: 4em;
   width: 4em;
-  animation: ${fall} ${({ speed }) => speed}ms linear;
+  animation: ${fall} ${({ speed }) => ( 240 / speed ) * 1000}ms linear;
   opacity: 0;
-  position: absolute;
+  position: fixed;
   top: 0;
+  border-radius: 1em;
   transition: background 0.3s ease;
   will-change: transform, opacity;
 `;
@@ -33,7 +34,7 @@ export default function Square({
 }) {
   const [moving, setMoving] = useState(false);
   const collision = useTimeout(
-    ((window.innerHeight - 130) * speed) / window.innerHeight
+    ((window.innerHeight - 130) * ( 240 / speed ) * 1000) / window.innerHeight
   );
 
   if (collision) {

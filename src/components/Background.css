@@ -1,12 +1,29 @@
   
   .bg-wrapper {
     overflow: hidden;
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    /* background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);  */
+    /* #1b2735, #362037 */
     width: 100%;
     height: 100%;
     position: absolute;
     z-index: -1;
   }
+
+/*   .beat-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: red;
+    opacity: .5
+  }
+  .beat-pulse:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); 
+  } */
   
   #stars {
     width: 1px;

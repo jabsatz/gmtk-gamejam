@@ -4,3 +4,7 @@ export const colors = {
   red: "linear-gradient(to top, #cb2d3e, #ef473a)",
   orange: "linear-gradient(to top, #fc8d1a, #f7b733)"
 };
+
+
+
+export const MIDI_ENABLED = false;
