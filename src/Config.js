@@ -7,4 +7,4 @@ export const colors = {
 
 
 
-export const MIDI_ENABLED = false;
+export const MIDI_ENABLED = true

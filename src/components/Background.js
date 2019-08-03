@@ -11,7 +11,8 @@ export default React.forwardRef(function Background(props, ref) {
   const {opacity} = useSpring({ opacity: 1, from: { opacity: 0 }})
 
   useImperativeHandle(ref, () => ({
-    triggerPulse: gradientString => { 
+    triggerPulse: gradientString => {
+      console.log(stripDominantColor(gradientString))
       setPulse({background: stripDominantColor(gradientString)})
       setTimeout(() => setPulse({background: "#1b2735"}), 100)
     }

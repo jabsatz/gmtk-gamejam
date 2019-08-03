@@ -28,6 +28,8 @@ const Title = styled.h1`
 
 const Button = styled(BaseButton)`
   grid-area: button;
+  justify-self: center;
+  align-self: center;
 `
 
 export default function Home({ onStart }) {

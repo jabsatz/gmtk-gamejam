@@ -28,7 +28,6 @@ const Wrapper = styled.div`
 
 export default function Square({
   squareData,
-  onMount,
   onCollision,
   speed = 5000
 }) {
@@ -42,9 +41,8 @@ export default function Square({
   }
 
   useEffect(() => {
-    onMount(squareData);
     setMoving(true);
-  }, [onMount, squareData]);
+  }, []);
 
   return <Wrapper color={squareData.color} speed={speed} moving={moving} />;
 }
