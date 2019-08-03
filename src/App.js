@@ -7,6 +7,7 @@ const Wrapper = styled.div`
   background: lightgray;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
 `;
 
 const Bar = styled.div`
