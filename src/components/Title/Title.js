@@ -1,26 +1,42 @@
 import React from 'react'
+import styled from "styled-components";
 import './Title.css'
 
+const TitleWrapper = styled.div`
+    grid-area: title;
+`
+
+const TitleText = styled.h1`
+  font-family: 'Bubblicious';
+  font-weight: normal;
+  line-height: 1.5;
+  color: white;
+  text-align: center;
+  font-size: 3.5em;
+  margin-top: .2em;
+  margin-bottom: 0;
+`
+const TitleBottomBar = styled.h4`
+font-family: 'Montserrat';
+font-weight: normal;
+line-height: 1.5;
+color: white;
+margin: 0 auto;
+text-align: center;
+`
 
 export default function Title() {
   const text = "SQUARES"
-    return <div class="wrapper">
-    <div class="clip-text clip-text_one">{text}</div>
-<div class="clip-text clip-text_fifteen clip-text--no-textzone">{text}</div>
-    <div class="clip-text clip-text_twelve clip-text--cover">{text}</div>
-<div class="clip-text clip-text_tree clip-text--no-textzone">{text}</div>
-    <div class="clip-text clip-text_two">{text}</div>
-    <div class="clip-text clip-text_fourteen clip-text--cover">{text}</div>
-    <div class="clip-text clip-text_tree">{text}</div>
-    <div class="clip-text clip-text_eleven clip-text--cover">{text}</div>
-    <div class="clip-text clip-text_four">{text}</div>
-    <div class="clip-text clip-text_five">{text}</div>
-    <div class="clip-text clip-text_six">{text}</div>
-    <div class="clip-text clip-text_seven">{text}</div>
-    <div class="clip-text clip-text_eight">{text}</div>
-    
-    <div class="clip-text clip-text_nine">{text}</div>
-    <div class="clip-text clip-text_ten">{text}</div>
-    <div class="clip-text clip-text_thirteen clip-text--cover">{text}</div>
-</div>
+    return <TitleWrapper>
+<TitleText>
+        The <span> amazing </span> adventures of the highly colorized falling squares
+      </TitleText>
+      <div className="neon">
+        <span className="gradient"></span>
+        <span className="spotlight"></span>
+      </div>
+
+ <TitleBottomBar className="title-bottom-bar"> and a bottom bar </TitleBottomBar>
+
+      </TitleWrapper>
 }

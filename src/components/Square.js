@@ -4,7 +4,7 @@ import styled, { keyframes } from "styled-components";
 const fall = keyframes`
   from {
     opacity: 1;
-    transform: translateY(-6em); 
+    transform: translateY(-4em); 
   }
   to {
     opacity: 1;
@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   background: ${({ color }) => color};
   height: 4em;
   width: 4em;
-  animation: ${fall} ${({ speed }) => (240 / speed) * 1000}ms linear;
+  animation: ${fall} ${({ speed }) => speed}ms linear;
   opacity: 0;
   position: fixed;
   top: 0;
@@ -25,12 +25,12 @@ const Wrapper = styled.div`
   will-change: transform, opacity;
 `;
 
-export default function Square({ color, speed = 5000 }) {
+export default function Square({ color, bpm }) {
   const [moving, setMoving] = useState(false);
 
   useEffect(() => {
     setMoving(true);
   }, []);
 
-  return <Wrapper color={color} speed={speed} moving={moving} />;
+  return <Wrapper color={color} speed={(60 / bpm) * 3600} moving={moving} />;
 }

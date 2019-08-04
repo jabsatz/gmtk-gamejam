@@ -6,7 +6,7 @@ const ColorsContainer = styled(animated.div)`
   box-shadow: 1px 2px 20px 4px #3535356b;
   display: flex;
   width: 100%;
-  height: 4em;
+  height: 2.5em;
   z-index: 1;
   will-change: transform, opacity;
 `;

@@ -12,7 +12,6 @@ export default React.forwardRef(function Background(props, ref) {
 
   useImperativeHandle(ref, () => ({
     triggerPulse: gradientString => {
-      console.log(stripDominantColor(gradientString))
       setPulse({background: stripDominantColor(gradientString)})
       setTimeout(() => setPulse({background: "#1b2735"}), 100)
     }

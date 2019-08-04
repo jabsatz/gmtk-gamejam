@@ -7,6 +7,7 @@ import Background from "./Background";
 import Bar from "./Bar";
 import LevelGenerator from "../utils/LevelGenerator";
 import ScoreCounter from "./ScoreCounter";
+import LoseScreen from './LoseScreen'
 
 const Wrapper = styled.div`
   height: 100%;
@@ -32,6 +33,7 @@ function Game({ onEnd, bpm, midi }) {
   }
 
   const [squares, setSquares] = useState([]);
+  const [loseFlag, setLoseFlag] = useState(false);
 
   const handleCollision = useCallback(
     collision => {
@@ -43,9 +45,9 @@ function Game({ onEnd, bpm, midi }) {
       } else {
         midi.current.onEnd();
         levelGenerator.current.stop();
-        onEnd();
+        setLoseFlag(true);
       }
-      setSquares(squares => squares.filter(s => s.key !== collision.key));
+      setTimeout(() => setSquares(squares => squares.filter(s => s.key !== collision.key)), 500);
     },
     [onEnd, midi]
   );
@@ -95,12 +97,13 @@ function Game({ onEnd, bpm, midi }) {
   return (
     <Wrapper onClick={handleTap}>
       {squares.map(s => (
-        <Square key={s.key} color={s.color} speed={bpm} />
+        <Square key={s.key} color={s.color} bpm={bpm} />
       ))}
       <ScoreCounter score={score} />
       <Bar color={color} />
       <ColorReference colors={currentColorsSet} />
       <Background ref={bgRef} />
+      <LoseScreen show={loseFlag} onAnimationEnd={() => onEnd()} />
     </Wrapper>
   );
 }

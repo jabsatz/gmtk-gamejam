@@ -24,7 +24,7 @@
 .button--9,
 .button--10 {
   -webkit-font-smoothing: antialiased;
-  background-color: #222;
+  background-color: #2cd892;
   border: none;
   display: inline-block;
   font-family: "Montserrat", sans-serif;
@@ -76,9 +76,12 @@
 }
 
 .button--1 {
+  cursor: pointer;
   position: relative;
   background: none;
   z-index: 0;
+  animation: hue-rotate 10s linear infinite;
+  width: 100%;
 }
 .button--1:hover {
   background: none;
@@ -124,6 +127,7 @@
   -ms-transform: translateY(-50%);
   -o-transform: translateY(-50%);
   transform: translateY(-50%);
+  animation: hue-rotate 10s linear infinite;
 }
 .button--1 .circle {
   position: absolute;
@@ -131,6 +135,7 @@
   height: 25px;
   border-radius: 15px;
   background: #222;
+  z-index: -1;
   -webkit-transition: background-color 0.1s ease-out;
   -moz-transition: background-color 0.1s ease-out;
   transition: background-color 0.1s ease-out;
