@@ -1,6 +1,7 @@
 {
   "name": "gmtk-gamejam",
   "version": "0.1.0",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "gsap": "^2.1.3",
