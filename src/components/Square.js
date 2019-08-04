@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
-import useTimeout from "../hooks/useTimeout";
 
 const fall = keyframes`
   from {
@@ -17,7 +16,7 @@ const Wrapper = styled.div`
   background: ${({ color }) => color};
   height: 4em;
   width: 4em;
-  animation: ${fall} ${({ speed }) => ( 240 / speed ) * 1000}ms linear;
+  animation: ${fall} ${({ speed }) => (240 / speed) * 1000}ms linear;
   opacity: 0;
   position: fixed;
   top: 0;
@@ -26,23 +25,12 @@ const Wrapper = styled.div`
   will-change: transform, opacity;
 `;
 
-export default function Square({
-  squareData,
-  onCollision,
-  speed = 5000
-}) {
+export default function Square({ color, speed = 5000 }) {
   const [moving, setMoving] = useState(false);
-  const collision = useTimeout(
-    ((window.innerHeight - 130) * ( 240 / speed ) * 1000) / window.innerHeight
-  );
-
-  if (collision) {
-    onCollision(squareData);
-  }
 
   useEffect(() => {
     setMoving(true);
   }, []);
 
-  return <Wrapper color={squareData.color} speed={speed} moving={moving} />;
+  return <Wrapper color={color} speed={speed} moving={moving} />;
 }

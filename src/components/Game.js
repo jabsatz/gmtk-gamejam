@@ -18,85 +18,84 @@ const Wrapper = styled.div`
 `;
 
 function Game({ onEnd, bpm, midi }) {
-    const bgRef = useRef()
-    const levelGenerator = useRef();
-    if(!levelGenerator.current) {
-      levelGenerator.current = new LevelGenerator(Object.values(colors), bpm)
-    }
-    useEffect(() => {
-        levelGenerator.current.play((square) => {
-          if(square) setSquares(squares => [...squares, square])
-          bgRef.current.triggerPulse("# #555")
-        }) 
-    }, [])
-
-
-  
+  const bgRef = useRef();
+  const levelGenerator = useRef();
   const [currentColorsSet, setColors] = useState(Object.values(colors));
-
   const [colorIndex, setColorIndex] = useState(0);
+  const color = currentColorsSet[colorIndex];
+  if (!levelGenerator.current) {
+    levelGenerator.current = new LevelGenerator(
+      Object.values(colors),
+      bpm,
+      colorIndex
+    );
+  }
+
   const [squares, setSquares] = useState([]);
+
+  const handleCollision = useCallback(
+    collision => {
+      if (collision.match) {
+        console.log("hit");
+        bgRef.current.triggerPulse(collision.color);
+        midi.current.onHit();
+        setScore(s => s + 1);
+      } else {
+        midi.current.onEnd();
+        levelGenerator.current.stop();
+        onEnd();
+      }
+      setSquares(squares => squares.filter(s => s.key !== collision.key));
+    },
+    [onEnd, midi]
+  );
+
+  useEffect(() => {
+    levelGenerator.current.play(({ square, collision }) => {
+      if (square) setSquares(squares => [...squares, square]);
+      if (collision) {
+        handleCollision(collision);
+      } else {
+        bgRef.current.triggerPulse("# #555");
+      }
+    });
+  }, [handleCollision]);
 
   useEffect(() => {
     setTimeout(() => {
       levelGenerator.current.startGame();
-    }, 1000)
-  }, [])
-
-  const color = currentColorsSet[colorIndex];
-
-  
+    }, 1000);
+  }, []);
 
   const [score, setScore] = useState(0);
 
-  
-  const handleCollision = useCallback(
-    square => {
-      if (square.color === color) {
-        console.log("hit");
-        bgRef.current.triggerPulse(color)
-        midi.current.onHit()
-        setScore(s => s + 1);
-      } else {
-        midi.current.onEnd()
-        levelGenerator.current.stop()
-        onEnd();
-      }
-      setSquares(squares => squares.filter(s => s.key !== square.key));
+  const updateColorIndex = useCallback(
+    curr => {
+      const newColorIndex = curr === currentColorsSet.length - 1 ? 0 : curr + 1;
+      levelGenerator.current.setBarColorIndex(newColorIndex);
+      return newColorIndex;
     },
-    [color, onEnd]
+    [currentColorsSet.length]
   );
-
-  const updateColorIndex = curr =>
-    curr === currentColorsSet.length - 1 ? 0 : curr + 1;
 
   const handleTap = useCallback(() => {
     setColorIndex(updateColorIndex);
-  }, []);
+  }, [updateColorIndex]);
 
   useEffect(() => {
     const handleKeyDown = e => {
       if (e.code === "Space" || e.code === "Enter") {
         handleTap();
       }
-    }
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [])
-
-
-  
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleTap]);
 
   return (
     <Wrapper onClick={handleTap}>
       {squares.map(s => (
-        <Square
-          key={s.key}
-          squareData={s}
-          onMount={handleMount}
-          onCollision={handleCollision}
-          speed={bpm}
-        />
+        <Square key={s.key} color={s.color} speed={bpm} />
       ))}
       <ScoreCounter score={score} />
       <Bar color={color} />
