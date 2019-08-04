@@ -50,6 +50,10 @@ export default class LevelGenerator {
     this.sendNewSquares = true;
   }
 
+  pauseGame() {
+    this.sendNewSquares = false;
+  }
+
   stop() {
     this.shouldStop = true;
   }
@@ -60,7 +64,7 @@ export default class LevelGenerator {
     if (this.sendNewSquares === true) {
       if (this.stepsToNextSquare === 0) {
         const { stepsToNextSquare, ...square } = this.getSquare();
-        this.stepsToNextSquare = stepsToNextSquare;
+        this.stepsToNextSquare = stepsToNextSquare - 1;
         this.squares.push(square);
         updates.square = square;
       } else {
@@ -81,12 +85,8 @@ export default class LevelGenerator {
   }
 
   getNextColorIndex(stepsToNextSquare) {
-    const a = stepsToNextSquare - 2;
-    const modifier =
-      stepsToNextSquare === 1
-        ? 0
-        : Math.floor(a / 3) + (a % 3 === 0 ? 0.1 : a % 3 === 1 ? 0.3 : 0.6);
-    const positionsToNextColor = Math.floor(Math.random() + modifier);
+    const modifier = stepsToNextSquare;
+    const positionsToNextColor = Math.round(Math.random() * modifier);
     const nextColorIndex =
       (this.lastColorIndex + positionsToNextColor) % this.colors.length;
     this.lastColorIndex = nextColorIndex;
@@ -94,7 +94,7 @@ export default class LevelGenerator {
   }
 
   getSquare() {
-    const stepsToNextSquare = Math.floor(Math.random() * 5 + 1);
+    const stepsToNextSquare = Math.floor(Math.random() * 3) + 1;
     const colorIndex = this.getNextColorIndex(stepsToNextSquare);
 
     const square = {

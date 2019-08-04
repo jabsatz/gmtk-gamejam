@@ -1,21 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import BaseButton from "./Button/Button";
-import styled, { createGlobalStyle} from "styled-components";
-import font from '../assets/Bubblicious.ttf'
-import Title from './Title/Title'
-
-const TitleFont = createGlobalStyle`
-  @font-face {
-    font-family: 'Bubblicious';
-    src: url(${font});
-  }
-`
+import styled from "styled-components";
+import Title from "./Title/Title";
+import menuThemeSrc from "../assets/menuTheme.mp3";
+import { Howl } from "howler";
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-areas: "title title title"
-                       ".  button ."
-                       ".  . .";
+  grid-template-areas:
+    "title title title"
+    ".  button ."
+    ".  . .";
   grid-template-rows: 2fr 1fr 2fr;
   grid-template-columns: 2fr 1fr 2fr;
   height: 100%;
@@ -28,20 +23,28 @@ const Wrapper = styled.div`
   border: 6px solid #eeebeb;
 `;
 
-
 const Button = styled(BaseButton)`
   grid-area: button;
   justify-self: center;
   align-self: center;
   width: 200%;
   margin-top: 2em;
-`
+`;
+
+const menuTheme = new Howl({
+  src: menuThemeSrc,
+  loop: true,
+  onfade: () => menuTheme.stop().volume(1)
+});
 
 export default function Home({ onStart }) {
+  useEffect(() => {
+    menuTheme.play();
+    return () => menuTheme.fade(1, 0, 1000);
+  }, []);
   return (
     <Wrapper>
-      <TitleFont />
-      <Title/>
+      <Title />
       <Button onClick={() => setTimeout(() => onStart(), 1000)}>
         Start game
       </Button>

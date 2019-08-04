@@ -7,7 +7,12 @@ import Background from "./Background";
 import Bar from "./Bar";
 import LevelGenerator from "../utils/LevelGenerator";
 import ScoreCounter from "./ScoreCounter";
-import LoseScreen from './LoseScreen'
+import LoseScreen from "./LoseScreen";
+import gameThemeOneSrc from "../assets/gameThemeOne.mp3";
+import gameThemeTwoSrc from "../assets/gameThemeTwo.mp3";
+import gameThemeThreeSrc from "../assets/gameThemeThree.mp3";
+import deathThemeSrc from "../assets/deathTheme.mp3";
+import { Howl } from "howler";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -18,7 +23,29 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-function Game({ onEnd, bpm, midi }) {
+const gameThemeThree = new Howl({
+  src: [gameThemeThreeSrc],
+  onfade: () => gameThemeThree.stop().volume(1),
+  loop: true
+});
+const gameThemeTwo = new Howl({
+  src: [gameThemeTwoSrc],
+  onfade: () => gameThemeTwo.stop().volume(1)
+});
+const gameThemeOne = new Howl({
+  src: [gameThemeOneSrc],
+  onfade: () => gameThemeOne.stop().volume(1)
+});
+
+const deathTheme = new Howl({
+  src: deathThemeSrc,
+  sprite: {
+    trimmed: [2000, 4000]
+  }
+});
+
+function Game({ onEnd }) {
+  const [bpm, setBpm] = useState(100);
   const bgRef = useRef();
   const levelGenerator = useRef();
   const [currentColorsSet, setColors] = useState(Object.values(colors));
@@ -35,22 +62,25 @@ function Game({ onEnd, bpm, midi }) {
   const [squares, setSquares] = useState([]);
   const [loseFlag, setLoseFlag] = useState(false);
 
-  const handleCollision = useCallback(
-    collision => {
-      if (collision.match) {
-        console.log("hit");
-        bgRef.current.triggerPulse(collision.color);
-        midi.current.onHit();
-        setScore(s => s + 1);
-      } else {
-        midi.current.onEnd();
-        levelGenerator.current.stop();
-        setLoseFlag(true);
-      }
-      setTimeout(() => setSquares(squares => squares.filter(s => s.key !== collision.key)), 500);
-    },
-    [onEnd, midi]
-  );
+  const handleCollision = useCallback(collision => {
+    if (collision.match) {
+      console.log("hit");
+      bgRef.current && bgRef.current.triggerPulse(collision.color);
+      setScore(s => s + 1);
+    } else {
+      levelGenerator.current.stop();
+      deathTheme.play("trimmed");
+      deathTheme.fade(0, 1, 500);
+      gameThemeOne.fade(1, 0, 1000);
+      gameThemeTwo.fade(1, 0, 1000);
+      gameThemeThree.fade(1, 0, 1000);
+      setLoseFlag(true);
+    }
+    setTimeout(
+      () => setSquares(squares => squares.filter(s => s.key !== collision.key)),
+      500
+    );
+  }, []);
 
   useEffect(() => {
     levelGenerator.current.play(({ square, collision }) => {
@@ -58,16 +88,69 @@ function Game({ onEnd, bpm, midi }) {
       if (collision) {
         handleCollision(collision);
       } else {
-        bgRef.current.triggerPulse("# #555");
+        bgRef.current && bgRef.current.triggerPulse("# #555");
       }
     });
   }, [handleCollision]);
 
+  const [progress, setProgress] = useState(0);
+
   useEffect(() => {
-    setTimeout(() => {
+    const tm = setTimeout(() => {
       levelGenerator.current.startGame();
+      gameThemeOne.play();
+      setProgress(1);
     }, 1000);
+    return () => clearTimeout(tm);
   }, []);
+
+  useEffect(() => {
+    if (progress === 1 && !loseFlag) {
+      const tm = setTimeout(() => {
+        gameThemeOne.fade(1, 0, 10000); //26000
+        levelGenerator.current.pauseGame();
+        setProgress(2);
+      }, 93000); //77000
+      return () => clearTimeout(tm);
+    }
+  }, [progress, loseFlag]);
+
+  useEffect(() => {
+    if (progress === 2 && !loseFlag) {
+      const tm = setTimeout(() => {
+        gameThemeTwo.play();
+        setBpm(120);
+        levelGenerator.current.setBPM(120);
+        levelGenerator.current.startGame();
+        setProgress(3);
+      }, 5000);
+      return () => clearTimeout(tm);
+    }
+  }, [progress, loseFlag]);
+
+  useEffect(() => {
+    if (progress === 3 && !loseFlag) {
+      const tm = setTimeout(() => {
+        levelGenerator.current.pauseGame();
+        setProgress(4);
+      }, 45500);
+      return () => clearTimeout(tm);
+    }
+  }, [progress, loseFlag]);
+
+  useEffect(() => {
+    if (progress === 4 && !loseFlag) {
+      const tm = setTimeout(() => {
+        gameThemeTwo.stop();
+        gameThemeThree.play();
+        setBpm(140);
+        levelGenerator.current.setBPM(140);
+        levelGenerator.current.startGame();
+        setProgress(5);
+      }, 2500);
+      return () => clearTimeout(tm);
+    }
+  }, [progress, loseFlag]);
 
   const [score, setScore] = useState(0);
 
@@ -81,8 +164,8 @@ function Game({ onEnd, bpm, midi }) {
   );
 
   const handleTap = useCallback(() => {
-    setColorIndex(updateColorIndex);
-  }, [updateColorIndex]);
+    !loseFlag && setColorIndex(updateColorIndex);
+  }, [loseFlag, updateColorIndex]);
 
   useEffect(() => {
     const handleKeyDown = e => {
@@ -99,11 +182,11 @@ function Game({ onEnd, bpm, midi }) {
       {squares.map(s => (
         <Square key={s.key} color={s.color} bpm={bpm} />
       ))}
-      <ScoreCounter score={score} />
+      <ScoreCounter show={!loseFlag} score={score} />
       <Bar color={color} />
       <ColorReference colors={currentColorsSet} />
       <Background ref={bgRef} />
-      <LoseScreen show={loseFlag} onAnimationEnd={() => onEnd()} />
+      <LoseScreen show={loseFlag} score={score} onAnimationEnd={onEnd} />
     </Wrapper>
   );
 }

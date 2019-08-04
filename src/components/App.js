@@ -1,27 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
-import MidiSender from "../utils/MidiSender";
-import { MIDI_ENABLED } from "../Config";
+import React, { useState } from "react";
 import Game from "./Game";
 import Home from "./Home";
+import { createGlobalStyle } from "styled-components";
 
+import font from "../assets/Bubblicious.ttf";
+
+const TitleFont = createGlobalStyle`
+  @font-face {
+    font-family: 'Bubblicious';
+    src: url(${font});
+  }
+`;
 
 export default function App() {
   const [inGame, setInGame] = useState(false);
-  const [bpm, setBpm] = useState(120);
 
-  const midi = useRef();
-    if(!midi.current) {
-      midi.current = new MidiSender(bpm, MIDI_ENABLED);
-      midi.current.init()
-    }
-
-  return inGame ? 
-    <Game bpm={bpm} onEnd={() => setInGame(false)}  midi={midi} /> :
-    <Home onStart={(bpm) => {
-      setInGame(true)
-      midi.current.onStart()
-      if(bpm && !Number.isNaN(parseInt(bpm))) {
-        setBpm(parseInt(bpm));
-      } 
-    }} />
+  return (
+    <>
+      <TitleFont />
+      {inGame ? (
+        <Game onEnd={() => setInGame(false)} />
+      ) : (
+        <Home onStart={() => setInGame(true)} />
+      )}
+    </>
+  );
 }

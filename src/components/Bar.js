@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useSpring, animated, config} from "react-spring";
+import { useSpring, animated } from "react-spring";
 
 const BarElement = styled(animated.div)`
   height: 5em;
@@ -29,13 +29,12 @@ const BarElement = styled(animated.div)`
 `;
 
 export default function Bar({ color }) {
-
   const props = useSpring({
     background: color,
-    transform: 'translateY(0px)',
+    transform: "translateY(0px)",
     opacity: 1,
-    from: { transform: 'translateY(50px)', opacity: 0 },
-  })
+    from: { transform: "translateY(50px)", opacity: 0 }
+  });
 
   return <BarElement style={props} />;
 }
