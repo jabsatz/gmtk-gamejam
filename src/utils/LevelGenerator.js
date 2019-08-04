@@ -84,9 +84,19 @@ export default class LevelGenerator {
     sendUpdateData && sendUpdateData(updates);
   }
 
-  getNextColorIndex(stepsToNextSquare) {
-    const modifier = stepsToNextSquare;
-    const positionsToNextColor = Math.round(Math.random() * modifier);
+  getModifiers() {
+    if (this.stepsFromPreviousSquare === 1) return [2, 0];
+    if (this.stepsFromPreviousSquare === 2) return [3, 0.5];
+    if (this.stepsFromPreviousSquare === 3) return [4, 0];
+    return [2, 0];
+  }
+
+  getNextColorIndex() {
+    const modifiers = this.getModifiers();
+    const randomSeed = Math.random();
+    const positionsToNextColor = Math.floor(
+      randomSeed * modifiers[0] + modifiers[1]
+    );
     const nextColorIndex =
       (this.lastColorIndex + positionsToNextColor) % this.colors.length;
     this.lastColorIndex = nextColorIndex;
@@ -95,7 +105,7 @@ export default class LevelGenerator {
 
   getSquare() {
     const stepsToNextSquare = Math.floor(Math.random() * 3) + 1;
-    const colorIndex = this.getNextColorIndex(stepsToNextSquare);
+    const colorIndex = this.getNextColorIndex();
 
     const square = {
       key: this.nextKey,
@@ -103,6 +113,7 @@ export default class LevelGenerator {
       stepsToNextSquare,
       stepsToCollision: 4
     };
+    this.stepsFromPreviousSquare = stepsToNextSquare;
     this.nextKey++;
     return square;
   }
