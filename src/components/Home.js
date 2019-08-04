@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Title from "./Title/Title";
 import menuThemeSrc from "../assets/menuTheme.mp3";
 import { Howl } from "howler";
+import Mute from './Mute'
 
 const Wrapper = styled.div`
   display: grid;
@@ -21,6 +22,7 @@ const Wrapper = styled.div`
   background-attachment: fixed;
   background-size: cover;
   border: 6px solid #eeebeb;
+  overflow: hidden;
 `;
 
 const Button = styled(BaseButton)`
@@ -48,6 +50,7 @@ export default function Home({ onStart }) {
       <Button onClick={() => setTimeout(() => onStart(), 1000)}>
         Start game
       </Button>
+      <Mute onMute={() => menuTheme.volume() === 0 ? menuTheme.volume(1) : menuTheme.volume(0)} isMuted={menuTheme.volume() === 0}/>
     </Wrapper>
   );
 }
